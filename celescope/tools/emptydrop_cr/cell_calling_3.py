@@ -11,6 +11,7 @@ import celescope.tools.emptydrop_cr.sgt as cr_sgt  # # modified sgt.py
 import celescope.tools.emptydrop_cr.stats as cr_stats  # # modified stats.py
 from celescope.tools.__init__ import (BARCODE_FILE_NAME, FEATURE_FILE_NAME,
                                       MATRIX_FILE_NAME)
+from celescope.tools import utils
 
 # Set random seed
 random.seed(0)
@@ -31,8 +32,7 @@ MIN_UMIS = 500
 # Minimum ratio of UMIs to the median (initial cell call UMI) to consider after the initial cell calling
 MIN_UMI_FRAC_OF_MEDIAN = 0.01
 
-# Maximum adjusted p-value to call a barcode as non-ambient
-MAX_ADJ_PVALUE = 0.01
+
 
 
 def adjust_pvalue_bh(p):
@@ -92,18 +92,20 @@ def est_background_profile_sgt(matrix, use_bcs):
 
     return (use_feats, bg_profile_p)
 
-
+@utils.add_log
 def find_nonambient_barcodes(raw_mat, recovered_cells,
                              min_umi_frac_of_median=MIN_UMI_FRAC_OF_MEDIAN,
                              min_umis_nonambient=MIN_UMIS,
-                             max_adj_pvalue=MAX_ADJ_PVALUE,):
+                             max_adj_pvalue=0.01):
     """ Call barcodes as being sufficiently distinct from the ambient profile
     Args:
       raw_mat: raw matrix of UMI counts
       recovered_cells: expected number of recovered cells
+      max_adj_pvalue: Maximum adjusted p-value to call a barcode as non-ambient
     Returns:
     TBD
     """
+    find_nonambient_barcodes.logger.info(f'FDR={max_adj_pvalue}')
     NonAmbientBarcodeResult = namedtuple('NonAmbientBarcodeResult',
                                          ['eval_bcs',      # Candidate barcode indices (n)
                                           'log_likelihood',  # Ambient log likelihoods (n)
@@ -201,7 +203,6 @@ def find_nonambient_barcodes(raw_mat, recovered_cells,
         pvalues = cr_stats.compute_ambient_pvalues(umis_per_bc[eval_bcs], obs_loglk, distinct_ns, sim_loglk)
 
         pvalues_adj = adjust_pvalue_bh(pvalues)
-        max_adj_pvalue = 0.01
         is_nonambient = pvalues_adj <= max_adj_pvalue
 
         print('Number of non-ambient barcodes from SGT:', len(eval_bcs[is_nonambient]))
@@ -221,7 +222,7 @@ def find_nonambient_barcodes(raw_mat, recovered_cells,
         )
 
 
-def cell_calling_3(all_matrix_10X_dir, expected_cell_num):
+def cell_calling_3(all_matrix_10X_dir, expected_cell_num, max_adj_pvalue):
 
     raw_mat_path = os.path.join(all_matrix_10X_dir, MATRIX_FILE_NAME[0])
     raw_mat = scipy.io.mmread(raw_mat_path)  # scipy.sparse.coo.coo_matrix
@@ -238,7 +239,7 @@ def cell_calling_3(all_matrix_10X_dir, expected_cell_num):
 
     # Run cell calling
     filtered_bc_indices, round_1_filtered_metrics, _non_ambient_barcode_result = find_nonambient_barcodes(
-        raw_mat=raw_mat, recovered_cells=expected_cell_num)
+        raw_mat=raw_mat, recovered_cells=expected_cell_num, max_adj_pvalue=max_adj_pvalue)
 
     cell_bc = raw_barcodes[filtered_bc_indices]
     initial_cell_num = round_1_filtered_metrics['filtered_bcs']

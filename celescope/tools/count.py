@@ -266,7 +266,7 @@ class Count(Step):
 
     @utils.add_log
     def emptydrop_cr_cell(self, df_sum):
-        cell_bc, initial_cell_num = cell_calling_3(self.raw_matrix_dir, self.expected_cell_num)
+        cell_bc, initial_cell_num = cell_calling_3(self.raw_matrix_dir, self.expected_cell_num, max_adj_pvalue=0.001)
         threshold = Count.find_threshold(df_sum, initial_cell_num)
         return cell_bc, threshold
 
