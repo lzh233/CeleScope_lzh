@@ -203,6 +203,9 @@ def find_nonambient_barcodes(raw_mat, recovered_cells,
         pvalues = cr_stats.compute_ambient_pvalues(umis_per_bc[eval_bcs], obs_loglk, distinct_ns, sim_loglk)
 
         pvalues_adj = adjust_pvalue_bh(pvalues)
+        with open('pvalues_adj.txt', 'w') as f:
+            for pval in pvalues_adj:
+                f.write('{}\n'.format(pval))
         is_nonambient = pvalues_adj <= max_adj_pvalue
 
         print('Number of non-ambient barcodes from SGT:', len(eval_bcs[is_nonambient]))
