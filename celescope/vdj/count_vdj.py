@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 
 from celescope.tools import utils
-from celescope.tools.matrix import get_barcodes_from_matrix_dir
-from celescope.tools.parse_match_dir import MatchDirParser
+from celescope.tools import parse_match_dir
 from celescope.__init__ import HELP_DICT
 from celescope.tools.step import Step, s_common
 from celescope.vdj.__init__ import CHAINS, PAIRS
@@ -78,12 +77,7 @@ class Count_vdj(Step):
             for seq in SEQUENCES_HEADER:
                 self.cols.append("_".join([seq, chain]))
 
-        if utils.check_arg_not_none(self.args, 'match_dir'):
-            self.match_cell_barcodes = MatchDirParser(match_dir).barcodes
-        elif utils.check_arg_not_none(self.args, 'matrix_dir'):
-            self.match_cell_barcodes = get_barcodes_from_matrix_dir(self.args.matrix_dir)
-        else:
-            raise FileNotFoundError("--match_dir or --matrix_dir is required.")
+        self.match_cell_barcodes = parse_match_dir.get_barcodes_from_args(args)
         self.match_cell_barcodes = set(self.match_cell_barcodes)
 
         # input data

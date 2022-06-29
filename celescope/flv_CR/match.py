@@ -6,8 +6,7 @@ from celescope.flv_CR.summarize import Summarize
 from celescope.tools import utils
 from celescope.tools.step import s_common, Step
 from celescope.tools.plotly_plot import Bar_plot
-from celescope.tools.parse_match_dir import MatchDirParser
-from celescope.tools.matrix import get_barcodes
+from celescope.tools import parse_match_dir
 
 
 class Match(Step):
@@ -37,7 +36,7 @@ class Match(Step):
         self.seqtype = args.seqtype
         self.chains = CHAIN[self.seqtype]
         self.pairs = PAIRED_CHAIN[self.seqtype]
-        self.match_cell_barcodes = MatchDirParser(match_dir)
+        self.match_cell_barcodes = parse_match_dir.get_barcodes_from_args(args)
 
         self.filter_annotation = f'{args.summarize_out}/filtered_contig_annotations.csv'
         self.filter_fasta = f'{args.summarize_out}/filtered_contig.fasta'

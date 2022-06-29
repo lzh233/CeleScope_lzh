@@ -324,64 +324,6 @@ def glob_file(pattern_list: list):
 
 
 
-@add_log
-def get_matrix_dir_from_match_dir(match_dir):
-    """
-    Returns:
-        matrix_dir: PosixPath object
-    """
-    matrix_dir_pattern_list = []
-    for matrix_dir_suffix in FILTERED_MATRIX_DIR_SUFFIX:
-        matrix_dir_pattern_list.append(f"{match_dir}/*count/*{matrix_dir_suffix}")
-  
-    matrix_dir = glob_file(matrix_dir_pattern_list)
-    get_matrix_dir_from_match_dir.logger.info(f"Matrix_dir :{matrix_dir}")
-
-    return matrix_dir
-
-
-@add_log
-def get_barcode_from_match_dir(match_dir):
-    '''
-    multi version compatible
-    Returns:
-        match_barcode: list
-        no_match_barcode: int
-    '''
-    matrix_dir = get_matrix_dir_from_match_dir(match_dir)
-    return get_barcode_from_matrix_dir(matrix_dir)
-
-
-@add_log
-def parse_match_dir(match_dir):
-    '''
-    return dict
-    keys: 'match_barcode', 'n_match_barcode', 'matrix_dir', 'tsne_coord'
-    '''
-    match_dict = {}
-
-    pattern_dict = {
-        'tsne_coord': [f'{match_dir}/*analysis*/*tsne_coord.tsv'],
-        'markers': [f'{match_dir}/*analysis*/*markers.tsv'],
-    }
-
-    for file_key in pattern_dict:
-        file_pattern= pattern_dict[file_key]
-        try:
-            match_file = glob_file(file_pattern)
-        except FileNotFoundError:
-            parse_match_dir.logger.warning(f"No {file_key} found in {match_dir}")
-        else:
-            match_dict[file_key] = match_file
-
-    match_dict['matrix_dir'] = get_matrix_dir_from_match_dir(match_dir)
-    match_barcode, n_match_barcode = get_barcode_from_match_dir(match_dir)
-    match_dict['match_barcode'] = match_barcode
-    match_dict['n_match_barcode'] = n_match_barcode
-
-    return match_dict
-
-
 def fastq_line(name, seq, qual):
     return f'@{name}\n{seq}\n+\n{qual}\n'
 

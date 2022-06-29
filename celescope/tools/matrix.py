@@ -101,9 +101,8 @@ class CountMatrix:
         Use all gene_id from features even if it is not in df
         Args:
             df: dataframe with columns: [row, column, value]. Will be grouped by row and column and count lines of value.
+            barcodes: list. If None, will use barcodes in df
             value: value name in df, UMI
-            features: Features
-            type: type of features, e.g. [gene, protein]
         """
 
         df = df.groupby([row, column]).agg({value: 'count'})

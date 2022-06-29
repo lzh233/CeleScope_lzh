@@ -1,7 +1,13 @@
-from celescope.tools import utils
+from celescope.tools import utils, matrix
 from celescope.tools.__init__ import FILTERED_MATRIX_DIR_SUFFIX
-from celescope.tools.matrix import CountMatrix, get_barcodes_from_matrix_dir
 
+
+def get_barcodes_from_matrix_dir(matrix_dir):
+    """
+    Use matrix.get_barcodes_from_matrix_dir;
+    This function is used to avoid importing celescope.tools.matrix.
+    """
+    return matrix.get_barcodes_from_matrix_dir(matrix_dir)
 
 def get_matrix_dir_from_args(args):
     if utils.check_arg_not_none(args, 'match_dir'):
@@ -12,6 +18,10 @@ def get_matrix_dir_from_args(args):
         raise ValueError("--match_dir or --matrix_dir is required.")
 
     return matrix_dir
+
+def get_barcodes_from_args(args):
+    matrix_dir = get_matrix_dir_from_args(args)
+    return get_barcodes_from_matrix_dir(matrix_dir)
         
 
 class MatchDirParser:
@@ -19,7 +29,7 @@ class MatchDirParser:
         self.match_dir = match_dir
 
         self.matrix_dir = self.get_matrix_dir()
-        self.barcodes = get_barcodes_from_matrix_dir(self.matrix_dir)
+        self.barcodes = matrix.get_barcodes_from_matrix_dir(self.matrix_dir)
 
         self.optional_files = {
             'tsne_file': [f'{self.match_dir}/*analysis*/*tsne_coord.tsv'],
