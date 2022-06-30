@@ -8,14 +8,15 @@ import resource
 import subprocess
 import time
 import unittest
+import json
 from collections import Counter, defaultdict
 from datetime import timedelta
 from functools import wraps
 
+from Bio.Seq import Seq
 import pandas as pd
 import pysam
 
-import celescope.tools
 from celescope.tools.__init__ import FILTERED_MATRIX_DIR_SUFFIX, BARCODE_FILE_NAME 
 from celescope.__init__ import ROOT_PATH
 
@@ -80,7 +81,6 @@ def add_mem(func):
 
     wrapper.logger = logger
     return wrapper
-
 
 
 def generic_open(file_name, *args, **kwargs):
@@ -323,6 +323,16 @@ def glob_file(pattern_list: list):
     return match_list[0]
 
 
+def get_matrix_file_path(matrix_dir, file_name):
+    """
+    compatible with gzip file
+    """
+    file_path_list = [f'{matrix_dir}/{file_name}', f'{matrix_dir}/{file_name}.gz']
+    for file_path in file_path_list:
+        if os.path.exists(file_path):
+            return file_path
+
+
 @add_log
 def get_barcode_from_matrix_dir(matrix_dir):
     """
@@ -330,12 +340,8 @@ def get_barcode_from_matrix_dir(matrix_dir):
         match_barcode: list
         no_match_barcode: int
     """
-    barcode_file_pattern_list = []
-    for barcode_file_name in BARCODE_FILE_NAME:
-        barcode_file_pattern_list.append(f"{matrix_dir}/{barcode_file_name}")
   
-    match_barcode_file = glob_file(barcode_file_pattern_list)
-    get_barcode_from_matrix_dir.logger.info(f"Barcode file:{match_barcode_file}")
+    match_barcode_file = get_matrix_file_path(matrix_dir, BARCODE_FILE_NAME)
     match_barcode, n_match_barcode = read_one_col(match_barcode_file)
 
     return match_barcode, n_match_barcode
@@ -399,15 +405,6 @@ def parse_match_dir(match_dir):
     return match_dict
 
 
-
-
-def get_scope_bc(bctype):
-    root_path = os.path.dirname(celescope.__file__)
-    linker_f = glob.glob(f'{root_path}/data/chemistry/{bctype}/linker*')[0]
-    whitelist_f = f'{root_path}/data/chemistry/{bctype}/bclist'
-    return linker_f, whitelist_f
-
-
 def fastq_line(name, seq, qual):
     return f'@{name}\n{seq}\n+\n{qual}\n'
 
@@ -418,15 +415,21 @@ def find_assay_init(assay):
 
 
 def find_step_module(assay, step):
+    file_path_dict = {
+        'assay': f'{ROOT_PATH}/{assay}/{step}.py',
+        'tools': f'{ROOT_PATH}/tools/{step}.py',
+    }
+
     init_module = find_assay_init(assay)
-    try:
+    if os.path.exists(file_path_dict['assay']):
         step_module = importlib.import_module(f"celescope.{assay}.{step}")
-    except ModuleNotFoundError:
-        try:
-            step_module = importlib.import_module(f"celescope.tools.{step}")
-        except ModuleNotFoundError:
-            module_path = init_module.IMPORT_DICT[step]
-            step_module = importlib.import_module(f"{module_path}.{step}")
+    elif hasattr(init_module, 'IMPORT_DICT') and step in init_module.IMPORT_DICT:
+        module_path = init_module.IMPORT_DICT[step]
+        step_module = importlib.import_module(f"{module_path}.{step}")
+    elif os.path.exists(file_path_dict['tools']):
+        step_module = importlib.import_module(f"celescope.tools.{step}")
+    else:
+        raise ModuleNotFoundError(f"No module found for {assay}.{step}")
 
     return step_module
 
@@ -619,6 +622,30 @@ def parse_vcf_to_df(vcf_file, cols=('chrom', 'pos', 'alleles'), infos=('VID', 'C
         df = df.append(pd.Series(rec_dict), ignore_index=True)
     vcf.close()
     return df
+
+
+def reverse_complement(seq):
+    """Reverse complementary sequence
+
+    :param original seq
+    :return Reverse complementary sequence
+    """
+    return str(Seq(seq).reverse_complement())
+
+def get_fastx_read_number(fastx_file):
+    """
+    get read number using pysam
+    """
+    n = 0
+    with pysam.FastxFile(fastx_file) as f:
+        for _ in f:
+            n += 1
+    return n
+
+@add_log
+def dump_dict_to_json(d, json_file):
+    with open(json_file, 'w') as f:
+        json.dump(d, f, indent=4)
 
 
 class Test_utils(unittest.TestCase):

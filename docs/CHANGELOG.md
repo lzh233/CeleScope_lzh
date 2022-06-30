@@ -1,12 +1,32 @@
+## [1.11.0] - 
+ ### `rna`
+ - All genes from the gtf file will be written to `genes.tsv`. https://github.com/singleron-RD/CeleScope/issues/81
 
-## [Unreleased] 
+ ### `flv_CR`
+ - fix a bug that `VJ Spanning (IGH, IGL) pair` will cause an KeyError if the order of [IGH, IGL] is not satisfied. https://github.com/singleron-RD/CeleScope/pull/145 
+
+
+## [1.11.0b0] - 2022-06-21
+ ### `flv_vdj`
+ - Chemistry `flv_rna`(full length VDJ matched mRNA) and `flv` can be auto-detected. 
+ - Remove assay `flv_trust4_split`.
+
  ### `snp`,`capture_virus` and `fusion`
  - Change the default `--umi_threshold_method` from `auto` to `otsu`.
+
+ ### `vdj`
+ - Use an improved cell-calling method that only match cell barcodes are considered. 
+ - Change how median IGH, IGK and IGL UMIs are calculated. Now all cells(include 0 UMI count cells) are taken into consideration.
+ - Add cell with chain pair metrics, e.g. "Cells with (IGH, IGK) pair".
+
+ ### `mkref`
+ - Change parameters for generating refFlat files to tolerate non-ensembl-compliant gtf.
+
  
 
 ## [1.10.0] - 2021-04-22
  ### `fl_vdj`
- - Add 3 new assays: `fl_vdj_CR`, `fl_vdj_TRUST4` and `fl_vdj_TRUST4_split`.
+ - Add 3 new assays: `flv_CR`, `flv_trust4` and `flv_trust4_split`.
 
  ### `rna` and `dynaseq`
  - Limit the marker genes of each cluster in the HTML report to a maximum of 50 to avoid the slow opening of the report.
