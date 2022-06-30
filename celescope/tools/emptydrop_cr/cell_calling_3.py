@@ -7,6 +7,7 @@ import numpy.ma as ma
 import celescope.tools.emptydrop_cr.sgt as cr_sgt  # # modified sgt.py
 import celescope.tools.emptydrop_cr.stats as cr_stats  # # modified stats.py
 from celescope.tools.matrix import CountMatrix
+from celescope.tools import utils
 
 
 # Set random seed
@@ -14,7 +15,7 @@ random.seed(0)
 np.random.seed(0)
 
 # Number of additional barcodes to consider after the initial cell calling
-N_CANDIDATE_BARCODES = 20000
+N_CANDIDATE_BARCODES = 10000
 
 # Number of partitions (max number of barcodes to consider for ambient estimation)
 N_PARTITIONS = 90000
