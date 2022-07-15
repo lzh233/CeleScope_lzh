@@ -214,11 +214,14 @@ class Count(Step):
 
         if (self.force_cell_num is not None) and (self.force_cell_num != 'None'):
             cell_bc, UMI_threshold = self.force_cell(df_sum)
-        elif cell_calling_method == 'auto':
-            cell_bc, UMI_threshold = self.auto_cell(df_sum)
-        elif cell_calling_method == 'EmptyDrops_CR':
-            cell_bc, UMI_threshold = self.emptydrop_cr_cell(df_sum)
-        return cell_bc, UMI_threshold
+        else:
+            auto_cell_bc, auto_UMI_threshold = self.auto_cell(df_sum)
+            if cell_calling_method == 'auto':
+                return auto_cell_bc, auto_UMI_threshold
+            elif cell_calling_method == 'EmptyDrops_CR':
+                n_cell_auto = len(auto_cell_bc)
+                cell_bc, UMI_threshold = self.emptydrop_cr_cell(df_sum, n_cell_auto)
+                return cell_bc, UMI_threshold
 
     @utils.add_log
     def force_cell(self, df_sum):
@@ -265,8 +268,8 @@ class Count(Step):
         return cell_bc, threshold
 
     @utils.add_log
-    def emptydrop_cr_cell(self, df_sum):
-        cell_bc, initial_cell_num = cell_calling_3(self.raw_matrix_dir, self.expected_cell_num)
+    def emptydrop_cr_cell(self, df_sum, n_auto_cell):
+        cell_bc, initial_cell_num = cell_calling_3(self.raw_matrix_dir, self.expected_cell_num, n_auto_cell)
         threshold = Count.find_threshold(df_sum, initial_cell_num)
         return cell_bc, threshold
 
