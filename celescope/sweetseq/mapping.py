@@ -2,7 +2,6 @@ import json
 
 import pysam
 
-from celescope.tools.count import Count
 from celescope.tools import utils
 from celescope.tools.barcode import Barcode
 from celescope.tools.step import Step, s_common
@@ -186,32 +185,6 @@ class Mapping(Step):
         with open(self.raw_read_count_file, 'w') as fp:
             json.dump(self.read_count_dict, fp, indent=4)
 
-    def correct_umi(self):
-        for barcode in self.count_dict:
-            for ref in self.count_dict[barcode]:
-                self.raw_umi += len(self.count_dict[barcode][ref])
-                n_corrected_umi, _n_corrected_read = Count.correct_umi(self.count_dict[barcode][ref])
-                if self.debug:
-                    print(f'{barcode} {ref} {n_corrected_umi}')
-                self.total_corrected_umi += n_corrected_umi
-
-    def add_correct_umi_metrics(self):
-        self.add_metric(
-            name='Number of Raw UMI',
-            value=self.raw_umi,
-            help_info='number of total raw UMI',
-        )
-
-        self.add_metric(
-            name='Number of Corrected UMI',
-            value=self.total_corrected_umi,
-            total=self.raw_umi,
-            help_info='correct sequencing errors in the UMI sequences ',
-        )
-
-    def write_corrected_read_count_file(self):
-        with open(self.corrected_read_count_file, 'w') as fp:
-            json.dump(self.read_count_dict, fp, indent=4)
 
     def write_UMI_count_file(self):
         pass
