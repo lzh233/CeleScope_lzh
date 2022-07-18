@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 
 from celescope.__init__ import HELP_DICT
@@ -38,7 +40,8 @@ class Count(Step):
         self.total_corrected_umi = 0
 
         # read
-        self.df_read_count = pd.read_csv(self.read_count_file, sep="\t", index_col=0)
+        with open(self.read_count_file) as fh:
+            self.count_dict = json.load(fh)
 
         if utils.check_arg_not_none(args, 'match_dir'):
             match_dict = utils.parse_match_dir(args.match_dir)
