@@ -13,8 +13,8 @@ def add_kit_version(chemistry):
         '2': 'kit V1',
         '3': 'kit V2',
     }
-    if chemistry.startswith('scopeV'):
-        s = chemistry.replace('scopeV', '')
+    if chemistry.startswith('v'):
+        s = chemistry.replace('v', '')
         chem_version = s[0]
         kit = kit_dict[chem_version]
         chemistry = f'{chemistry} ({kit})'

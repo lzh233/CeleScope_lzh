@@ -1,3 +1,20 @@
+##
+ ### General improvments
+ - Change the version number of chemistry to be consistent with the version number of kit.
+
+ Now:
+ ```
+    v0 : Micro Bead Kit. This kit is no longer in use.
+    v1.* : Magnetic Bead Kit V1.
+    v2.* : Magnetic Bead Kit V2.
+ ```
+ Previous:
+ ```
+    scopeV1 : Micro Bead Kit. This kit is no longer in use.
+    scopeV2.*.* : Magnetic Bead Kit V1.
+    scopeV3.*.* : Magnetic Bead Kit V2.
+ ```
+
 ## [1.11.0] - 2022-07-07
  ### `rna`
  - All genes from the gtf file will be written to `genes.tsv`. https://github.com/singleron-RD/CeleScope/issues/81
@@ -57,7 +74,7 @@
  - When calculating `otsu` threshold, use `math.ceil` instead of `int`.
  
  ### General improvments
- - Fix an issue where the conditions for detecting scopeV2.0.1 are too loose. (#108)
+ - Fix an issue where the conditions for detecting v1.1 are too loose. (#108)
  - Move `sjm.job` from `./log/` to `./sjm/`.
  - Change output file suffix.
     - raw_matrix: `all_matrix` -> `raw_feature_bc_matrix`
@@ -129,8 +146,8 @@
 
 ## [1.5.2] - 2021-11-02
  ### General improvments
- - Add auto-detection for chemistry `scopeV3.0.1`.
- - Remove support for deprecated chemistry `scopeV2.0.0` and `scopeV2.1.0`.
+ - Add auto-detection for chemistry `v2.0`.
+ - Remove support for deprecated chemistry `v1.0` and `v1.2`.
 
 ## [1.5.1] - 2021-10-28
  ### `snp`
@@ -284,7 +301,7 @@ Now:
 
 - Add `.metrics.json`
 
-- Add `scopeV1` chemistry support.
+- Add `v0` chemistry support.
  
 ### Changed
   

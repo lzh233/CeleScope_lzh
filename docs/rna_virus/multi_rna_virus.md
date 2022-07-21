@@ -48,8 +48,8 @@ fastq_prefix2_1.fq.gz	fastq_prefix2_2.fq.gz
 `--debug` If this argument is used, celescope may output addtional file for debugging.
 
 `--chemistry` Predefined (pattern, barcode whitelist, linker whitelist) combinations. Can be one of:  
-- `auto` Default value. Used for Singleron GEXSCOPE libraries >= scopeV2 and automatically detects the combinations.  
-- `scopeV1` Used for legacy Singleron GEXSCOPE scopeV1 libraries.  
+- `auto` Default value. Used for Singleron GEXSCOPE libraries >= v2 and automatically detects the combinations.  
+- `v0` Used for legacy Singleron GEXSCOPE v0 libraries.  
 - `customized` Used for user defined combinations. You need to provide `pattern`, `whitelist` and `linker` at the 
 same time.
 

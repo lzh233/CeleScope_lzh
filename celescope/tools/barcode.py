@@ -23,20 +23,20 @@ class Chemistry():
 
     def __init__(self, fq1):
         '''
-        'scopeV2.0.1': 'C8L16C8L16C8L1U8T18'
-        'scopeV2.1.1': 'C8L16C8L16C8L1U12T18'
-        'scopeV2.2.1': 'C8L16C8L16C8L1U12T18' with 4 types of linkers
-        'scopeV3.0.1': 'C9L16C9L16C9L1U12T18' with 4 types of linkers
+        'v1.1': 'C8L16C8L16C8L1U8T18'
+        'v1.3': 'C8L16C8L16C8L1U12T18'
+        'v1.4': 'C8L16C8L16C8L1U12T18' with 4 types of linkers
+        'v2.0': 'C9L16C9L16C9L1U12T18' with 4 types of linkers
         '''
         self.fq1 = fq1
         self.fq1_list = fq1.split(',')
         self.n_read = 10000
 
         self.pattern_dict_v2, * \
-            _, self.linker_1_v2_set_list, self.linker_1_v2_mismatch_list = Barcode.parse_chemistry('scopeV2.1.1')
+            _, self.linker_1_v2_set_list, self.linker_1_v2_mismatch_list = Barcode.parse_chemistry('v1.3')
         self.pattern_dict_v2, * \
-            _, self.linker_4_v2_set_list, self.linker_4_v2_mismatch_list = Barcode.parse_chemistry('scopeV2.2.1')
-        self.pattern_dict_v3, *_, self.linker_v3_set_list, self.linker_v3_mismatch_list = Barcode.parse_chemistry('scopeV3.0.1')
+            _, self.linker_4_v2_set_list, self.linker_4_v2_mismatch_list = Barcode.parse_chemistry('v1.4')
+        self.pattern_dict_v3, *_, self.linker_v3_set_list, self.linker_v3_mismatch_list = Barcode.parse_chemistry('v2.0')
         self.pattern_dict_flv, *_, self.linker_flv_set_list, self.linker_flv_mismatch_list = Barcode.parse_chemistry('flv')
         self.pattern_dict_flv_rna, *_, self.linker_flv_rna_set_list, self.linker_flv_rna_mismatch_list = Barcode.parse_chemistry('flv_rna')
 
@@ -61,23 +61,23 @@ class Chemistry():
         >>> runner = Chemistry("fake_fq1_string")
         >>> seq = "TCGACTGTCATCCACGTGCTTGAGATTCTAGGATTCAGCATGCGGCTACGTGCACGAGACATATCAATGGGTTTTCTTGTTGCTTTTTTTTTTTTTTTTTTTTTTTT"
         >>> runner.seq_chemistry(seq)
-        'scopeV3.0.1'
+        'v2.0'
 
         >>> seq = "GTCGTAGAATCCACGTGCTTGAGACTCAATGATCAGCATGCGGCTACGGCGATTAACGTTGAATGTTTTTTTTTTTTTTTTTTTTT"
         >>> runner.seq_chemistry(seq)
-        'scopeV2.0.1'
+        'v1.1'
 
         >>> seq = "NCAGATTC" + "ATCCACGTGCTTGAGA" + "GTACGCAA" + "TCAGCATGCGGCTACG" + "CTGAGCCA" + "C" + "TCCGAAGCCCAT" + "TTTTTTTTTTTTTTTTTTTTTTTTTTATTGC"
         >>> runner.seq_chemistry(seq)
-        'scopeV2.1.1'
+        'v1.3'
 
         >>> seq = "NCAGATTC" + "TCGGTGACAGCCATAT" + "GTACGCAA" + "CGTAGTCAGAAGCTGA" + "CTGAGCCA" + "C" + "TCCGAAGCCCAT" + "TTTTTTTTTTTTTTTTTTTTTTTTTTATTGC"
         >>> runner.seq_chemistry(seq)
-        'scopeV2.2.1'
+        'v1.4'
 
         """
 
-        # check flv_rna first. otherwise it may be considered as scopeV2.1.1 and scopeV2.2.1
+        # check flv_rna first. otherwise it may be considered as v1.3 and v1.4
         linker_flv_rna = Barcode.get_seq_str(seq, self.pattern_dict_flv_rna["L"])
         bool_valid, _, _ = Barcode.check_seq_mismatch(
             [linker_flv_rna], self.linker_flv_rna_set_list, self.linker_flv_rna_mismatch_list)
@@ -90,21 +90,21 @@ class Chemistry():
             [linker_v2], self.linker_1_v2_set_list, self.linker_1_v2_mismatch_list)
         if bool_valid:
             if seq[65:69] == "TTTT":
-                return "scopeV2.0.1"
+                return "v1.1"
             else:
-                return "scopeV2.1.1"
+                return "v1.3"
 
         linker_v3 = Barcode.get_seq_str(seq, self.pattern_dict_v3["L"])
         bool_valid, _, _ = Barcode.check_seq_mismatch(
             [linker_v3], self.linker_v3_set_list, self.linker_v3_mismatch_list)
         if bool_valid:
-            return "scopeV3.0.1"
+            return "v2.0"
 
         linker_v2 = Barcode.get_seq_str(seq, self.pattern_dict_v2["L"])
         bool_valid, _, _ = Barcode.check_seq_mismatch(
             [linker_v2], self.linker_4_v2_set_list, self.linker_4_v2_mismatch_list)
         if bool_valid:
-            return "scopeV2.2.1"
+            return "v1.4"
 
         linker_flv = Barcode.get_seq_str(seq, self.pattern_dict_flv["L"])
         bool_valid, _, _ = Barcode.check_seq_mismatch(
@@ -126,8 +126,8 @@ class Chemistry():
                 if chemistry:
                     results[chemistry] += 1
         # if it is 0, then no other linker types
-        if results["scopeV2.2.1"] != 0:
-            results["scopeV2.2.1"] += results["scopeV2.1.1"]
+        if results["v1.4"] != 0:
+            results["v1.4"] += results["v1.3"]
         sorted_counts = sorted(results.items(), key=lambda x: x[1], reverse=True)
         self.get_chemistry.logger.info(sorted_counts)
 
@@ -572,10 +572,10 @@ class Barcode(Step):
             chemistry = self.chemistry_list[i]
             lowNum = int(self.lowNum)
             lowQual = int(self.lowQual)
-            if chemistry == 'scopeV1':
+            if chemistry == 'v0':
                 lowNum = min(0, lowNum)
                 lowQual = max(10, lowQual)
-                self.run.logger.info(f'scopeV1: lowNum={lowNum}, lowQual={lowQual} ')
+                self.run.logger.info(f'v0: lowNum={lowNum}, lowQual={lowQual} ')
             # get linker and whitelist
             bc_pattern = PATTERN_DICT[chemistry]
             if (bc_pattern):

@@ -26,20 +26,26 @@ PS: If the default parameters are used, low quality reads are not filtered. So `
 
 ### The correspondence between chemistry and kits
 
+CeleScope version <= 1.11.0
 - `scopeV1` : Micro Bead Kit. This kit is no longer in use.
 - `scopeV2.*.*` : Magnetic Bead Kit V1.
 - `scopeV3.*.*` : Magnetic Bead Kit V2.
 
-### Analyze data with the updated chemistry version: scopeV3.0.1
-- If you are using the latest CeleScope version(>= v1.5.2), it can auto-detect scopeV3.0.1, so `--chemistry auto` will work. You can also explicitly specify `--chemistry scopeV3.0.1`.
+CeleScope version > 1.11.0
+- `v0` : Micro Bead Kit. This kit is no longer in use.
+- `v1.*` : Magnetic Bead Kit V1.
+- `v2.*` : Magnetic Bead Kit V2.
+
+### Analyze data with the updated chemistry version: v2.0
+- If you are using the latest CeleScope version(> v1.5.2), it can auto-detect v2.0(scopeV3.0.1), so `--chemistry auto` will work.
 
 - If you are using CeleScope version < v1.5.2, then you need to use `--chemistry customized` and provide 3 additional arguments: (pattern, whitelist, linker).
 ```
 multi_rna \
  --chemistry customized \
  --pattern C9L16C9L16C9L1U12T18 \
- --whitelist celescope/data/chemistry/scopeV3.0.1/bclist \
- --linker celescope/data/chemistry/scopeV3.0.1/linker_4types \
+ --whitelist celescope/data/chemistry/v2.0/bclist \
+ --linker celescope/data/chemistry/v2.0/linker_4types \
  ...
 ```
 
