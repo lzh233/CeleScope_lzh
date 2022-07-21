@@ -45,7 +45,7 @@ HELP_DICT = {
     'genomeSAindexNbases': '''For small genomes, the parameter --genomeSAindexNbases must to be scaled down, with a typical 
 value of min(14, log2(GenomeLength)/2 - 1). For example, for 1 megaBase genome, this is equal 
 to 9, for 100 kiloBase genome, this is equal to 7.''',
-    'chemistry': '`--chemistry auto` can auto-detect v2 mRNA, v3 mRNA, full length VDJ mRNA(flv_rna) and full length VDJ(flv). You need to explicitly use `--chemistry v0` for legacy chemistry v0. `--chemistry customized` is used for user defined combinations that you need to provide `--pattern`, `--whitelist` and `--linker` at the same time.',   
+    'chemistry': '`--chemistry auto` can auto-detect v1 mRNA, v2 mRNA, full length VDJ mRNA(flv_rna) and full length VDJ(flv). You need to explicitly use `--chemistry v0` for legacy chemistry v0. `--chemistry customized` is used for user defined combinations that you need to provide `--pattern`, `--whitelist` and `--linker` at the same time.',   
 }
 
 # report metrics help

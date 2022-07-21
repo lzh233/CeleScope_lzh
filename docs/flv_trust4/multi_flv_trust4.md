@@ -11,11 +11,12 @@ multi_flv_trust4 \
 ## Features
 ### barcode
 
-- Demultiplex barcodes and UMIs.
-- Reverse complement the barcode to match RNA library barcodes.
-- Only reads with barcodes oberserbed in matched RNA library are kept.
-- If there are more than 80,000 reads for any barcodes, the reads are downsampled.
-
+- Demultiplex barcodes.
+- Filter invalid R1 reads, which includes:
+    - Reads without linker: the mismatch between linkers and all linkers in the whitelist is greater than 2.  
+    - Reads without correct barcode: the mismatch between barcodes and all barcodes in the whitelist is greater than 1.  
+    - Reads without polyT: the number of T bases in the defined polyT region is less than 10.
+    - Low quality reads: low sequencing quality in barcode and UMI regions.
 
 
 ### mapping
@@ -51,7 +52,6 @@ multi_flv_trust4 \
 
 - `01.barcode/{sample}_2.fq(.gz)` Demultiplexed R2 reads. Barcode and UMI are contained in the read name. The format of 
 the read name is `{barcode}_{UMI}_{read ID}`.
-- `01.barcode/{sample}_1.fq(.gz)` Write barcode and umi to R1 read(can be directly used as input file of TRUST4).
 
 ### mapping
 - `02.mapping/{sample}_bcrtcr.fq` All candidate reads(mapped to any V(D)J genes) sequence.
@@ -149,7 +149,7 @@ use `--steps_run barcode,cutadapt`.
 
 `--debug` If this argument is used, celescope may output addtional file for debugging.
 
-`--chemistry` Predefined (pattern, barcode whitelist, linker whitelist) combinations. `--chemistry auto` can auto-detect v2 mRNA, v3 mRNA, full length VDJ mRNA(flv_rna) and full length VDJ(flv). You need to explicitly use `--chemistry v0` for legacy chemistry v0. `--chemistry customized` is used for user defined combinations that you need to provide `--pattern`, `--whitelist` and `--linker` at the same time.
+`--chemistry` Predefined (pattern, barcode whitelist, linker whitelist) combinations. `--chemistry auto` can auto-detect v1 mRNA, v2 mRNA, full length VDJ mRNA(flv_rna) and full length VDJ(flv). You need to explicitly use `--chemistry v0` for legacy chemistry v0. `--chemistry customized` is used for user defined combinations that you need to provide `--pattern`, `--whitelist` and `--linker` at the same time.
 
 `--pattern` The pattern of R1 reads, e.g. `C8L16C8L16C8L1U12T18`. The number after the letter represents the number 
         of bases.  
